@@ -66,8 +66,8 @@ Below are the high level steps that we perform for each incoming file: <br />
 	<ol> 
 		<li> All the sub files in a Superfile will be consolidated into a single sub file </li>
 		<li> Build one single index using the data in the superfile. </li>
-		<li> Clear up the SuperKey and add the index built in step 7(a) to the Superkey. </li>
+		<li> Clear up the SuperKey and add the index built in step 7(i) to the Superkey. </li>
 	    <li> Clear the SuperFile. </li>
 	</ol>
 </ol>
-NOTE: Step 7 is not yet implemented and will be availble in future version.
+<b>NOTE:</b> Step 7 is not yet implemented and will be availble in future version.
