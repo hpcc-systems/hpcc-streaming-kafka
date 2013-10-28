@@ -31,6 +31,7 @@ On the ECL side there are 2 schedulers:
 1. DataCollection_Scheduler.ecl : Which fetched the data from Apache Kafka brokers, creates logical files and adds the logical files to superfile.
 2. BuildIndex_Scheduler.ecl: Which creates a base file from the data received, creates indexes, adds the indexes to superkeys, builds a package and deploy the package to ROXIE.
 
+
 Before you can start the schedulers you need to publish the queries to ROXIE (telematics_service_accdec.ecl and telematics_service_km_by_speed.ecl).
 
 The two schedulers are independent of each other which means that if one fails the other will not be affected.
