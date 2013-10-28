@@ -8,8 +8,8 @@ Consumer:
 
 The Apache Kafka Consumer will be running on each node of the HPCC Cluster. The consumer connects to the Kafka brokers and fetches the data
 depending upon the 'messageListSize' property defined in DataConsumer.properties file. We are using Non-Blocking Consumer since we need to read only specific number of messages for a topic.
-The Consumers run in parallel hence the topic partition size should be equal to "Number of slave nodes". 
-For e.g. If we are running a 5 node cluster (1 THOR Master and 4 slaves) then the partition size will be 4.
+The Consumers run in parallel hence the topic partition size should be equal to "Number of slave nodes". <br />
+For e.g. If you are running a 5 node cluster (1 THOR Master and 4 slaves) then the partition size will be 4.
 
 Producer:
 ----------
