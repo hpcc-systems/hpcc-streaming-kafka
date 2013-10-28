@@ -26,7 +26,7 @@ Installation Steps:
 
 - Make changes to DataConsumer.properties to point to Apache Kafka Cluster.
 - Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath. 
-  <i>As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.</i>
+  <i><b>As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.</b></i>
 - Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath.
 - Add Log4j jar file to the classpath.
 - Restart the cluster.
