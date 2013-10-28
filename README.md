@@ -35,9 +35,9 @@ Usage:
 ----------
 
 The code base contains an example for Apache Kafka Producer (TelematicsSimulator.java) which simulates sample telematics data.
-On the ECL side there are 2 schedulers:
-1. DataCollection_Scheduler.ecl : Which fetched the data from Apache Kafka brokers, creates logical files and adds the logical files to superfile.
-2. BuildIndex_Scheduler.ecl: Which creates a base file from the data received, creates indexes, adds the indexes to superkeys, builds a package and deploy the package to ROXIE.
+On the ECL side there are 2 schedulers: <br />
+- DataCollection_Scheduler.ecl : Which fetched the data from Apache Kafka brokers, creates logical files and adds the logical files to superfile.
+- BuildIndex_Scheduler.ecl: Which creates a base file from the data received, creates indexes, adds the indexes to superkeys, builds a package and deploy the package to ROXIE.
 
 
 Before you can start the schedulers you need to publish the queries to ROXIE (telematics_service_accdec.ecl and telematics_service_km_by_speed.ecl).
@@ -47,24 +47,24 @@ The two schedulers are independent of each other which means that if one fails t
 DataCollection Scheduler:
 ----------
 
-Below are the high level steps that we perform for each incoming logical file:
-1. The DataConsumer returns the data fetched from brokers as a string.
-2. Creates a logical file for each iteration and adds it to Superfile.
+Below are the high level steps that we perform for each incoming logical file: <br />
+1. The DataConsumer returns the data fetched from brokers as a string. <br />
+2. Creates a logical file for each iteration and adds it to Superfile. <br />
 
 BuildIndex_Scheduler:
 ----------
 
-Below are the high level steps that we perform for each incoming file:
-1. Swap the contents of Superfile used by DataCollection Scheduler to a temporary superfile.
-2. Create a Base File which contains the cleaned/parsed data. 
-3. Create a index on the sub file
-4. Add the index to the SuperKey and Base file to Superfile
-5. Create package XML for the queries deployed and publish the new data using packages (I do this using SOAPCALL from ECL. It can be done using ecl command line as well). 
-6. Roxie Query will pick up the data from Superkey (which will be deployed using package)
-7. After specific time interval (1 hour, 6 hours or 1 day) do the following:
-	a.	All the sub files in a Superfile will be consolidated into a single sub file
-	b.	Build one single index using the data in the superfile.
-	c.	Clear up the SuperKey and add the index built in step 7(a) to the Superkey.
-	d.	Clear the SuperFile. 
+Below are the high level steps that we perform for each incoming file: <br />
+1. Swap the contents of Superfile used by DataCollection Scheduler to a temporary superfile. <br />
+2. Create a Base File which contains the cleaned/parsed data. <br />
+3. Create a index on the sub file <br />
+4. Add the index to the SuperKey and Base file to Superfile <br />
+5. Create package XML for the queries deployed and publish the new data using packages (I do this using SOAPCALL from ECL. It can be done using ecl command line as well). <br />
+6. Roxie Query will pick up the data from Superkey (which will be deployed using package) <br />
+7. After specific time interval (1 hour, 6 hours or 1 day) do the following: <br />
+	a.	All the sub files in a Superfile will be consolidated into a single sub file <br />
+	b.	Build one single index using the data in the superfile. <br />
+	c.	Clear up the SuperKey and add the index built in step 7(a) to the Superkey. <br />
+	d.	Clear the SuperFile. <br />
 
 NOTE: Step 7 is not yet implemented and will be availble in future version.
