@@ -55,16 +55,17 @@ BuildIndex_Scheduler:
 ----------
 
 Below are the high level steps that we perform for each incoming file: <br />
-1. Swap the contents of Superfile used by DataCollection Scheduler to a temporary superfile. <br />
-2. Create a Base File which contains the cleaned/parsed data. <br />
-3. Create a index on the sub file <br />
-4. Add the index to the SuperKey and Base file to Superfile <br />
-5. Create package XML for the queries deployed and publish the new data using packages (I do this using SOAPCALL from ECL. It can be done using ecl command line as well). <br />
-6. Roxie Query will pick up the data from Superkey (which will be deployed using package) <br />
-7. After specific time interval (1 hour, 6 hours or 1 day) do the following: <br />
-	a.	All the sub files in a Superfile will be consolidated into a single sub file <br />
-	b.	Build one single index using the data in the superfile. <br />
-	c.	Clear up the SuperKey and add the index built in step 7(a) to the Superkey. <br />
-	d.	Clear the SuperFile. <br />
-
+<ol>
+<li> Swap the contents of Superfile used by DataCollection Scheduler to a temporary superfile. </li>
+<li> Create a Base File which contains the cleaned/parsed data. </li>
+<li> Create a index on the sub file </li>
+<li> Add the index to the SuperKey and Base file to Superfile </li>
+<li> Create package XML for the queries deployed and publish the new data using packages (I do this using SOAPCALL from ECL. It can be done using ecl command line as well). </li>
+<li> Roxie Query will pick up the data from Superkey (which will be deployed using package) </li>
+<li> After specific time interval (1 hour, 6 hours or 1 day) do the following: </li>
+	 - All the sub files in a Superfile will be consolidated into a single sub file
+	 - Build one single index using the data in the superfile.
+	 - Clear up the SuperKey and add the index built in step 7(a) to the Superkey.
+	 - Clear the SuperFile.
+</ol>
 NOTE: Step 7 is not yet implemented and will be availble in future version.
