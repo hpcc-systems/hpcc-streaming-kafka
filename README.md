@@ -1,3 +1,6 @@
+kafka-integration
+----------
+
 This repository will contain the source code/documentation for streaming data using Apache Kafka and HPCC.
 
 Consumer:
@@ -21,12 +24,12 @@ This must be configured according to message throughput and cluster availability
 Installation Steps:
 ----------
 
-1. Make changes to DataConsumer.properties to point to Apache Kafka Cluster.
-2. Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath. 
-   As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.
-3. Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath.
-4. Add Log4j jar file to the classpath.
-5. Restart the cluster.
+- Make changes to DataConsumer.properties to point to Apache Kafka Cluster.
+- Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath. 
+  As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.
+- Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath.
+- Add Log4j jar file to the classpath.
+- Restart the cluster.
 
 Usage:
 ----------
