@@ -63,7 +63,7 @@ Below are the high level steps that we perform for each incoming file: <br />
 <li> Create package XML for the queries deployed and publish the new data using packages (I do this using SOAPCALL from ECL. It can be done using ecl command line as well). </li>
 <li> Roxie Query will pick up the data from Superkey (which will be deployed using package) </li>
 <li> After specific time interval (1 hour, 6 hours or 1 day) do the following: </li>
-	 - All the sub files in a Superfile will be consolidated into a single sub file
+<li> - All the sub files in a Superfile will be consolidated into a single sub file </li>
 	 - Build one single index using the data in the superfile.
 	 - Clear up the SuperKey and add the index built in step 7(a) to the Superkey.
 	 - Clear the SuperFile.
