@@ -82,4 +82,4 @@ createFilesAndgetContents := SEQUENTIAL(CreateSuperFiles, swapSuperFileContents)
 buildIndexes := IF(EXISTS($.Util.getSuperFileContents($.files.SUPERFILE_RAWDATA_TEMP)), BuildIndex_Scheduler(time));
 
 start_build_process := SEQUENTIAL(createFilesAndgetContents, buildIndexes);
-start_build_process : WHEN ( CRON ( '0-59/1 * * * *' ) ); //SCHEDULE A JOB every 5 minute
+start_build_process : WHEN ( CRON ( '0-59/5 * * * *' ) ); //SCHEDULE A JOB every 5 minute
