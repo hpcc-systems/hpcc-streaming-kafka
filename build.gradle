@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+repositories {
+    flatDir { dirs 'lib' }
+
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+
+    maven {
+        url "http://repo.mavenRepo.apache.org/mavenRepo2"
+    }
+}
+
+dependencies {
+    compile 'kafka:kafka_2.8.0:0.8.0-beta1'
+    compile 'kafka:kafka-assembly-0.8.0-beta1-deps:0.8.0-beta1'
+    compile 'org.apache:log4j:1.2.15'
+}
+
+jar {
+    from {
+        configurations.compile.collect { it }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.name
+            version project.version
+        }
+    }
+}
