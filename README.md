@@ -70,5 +70,5 @@ Below are the high level steps that we perform for each incoming file: <br />
 	    <li> Clear the SuperFile. </li>
 	</ol>
 </ol>
-<b>NOTE:</b> Step 7 is not yet implemented and will be available in a future version.
-<b>NOTE:</b> Documentation for the provisional changes in the <b>gradle-build</b> branch are pending.
+<b>NOTE:</b> Step 7 is not yet implemented and will be available in a future version.<br />
+<b>NOTE:</b> Documentation for the provisional changes in the <b>gradle-build</b> branch are pending.<br />
