@@ -21,9 +21,10 @@ dependencies {
     compile 'org.apache:log4j:1.2.15'
 }
 
+// Create a single jar containing binaries from this project and all its dependencies
 jar {
     from {
-        configurations.compile.collect { it }
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
