@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/kafka-deps/jopt-simple-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/jsch-0.1.48.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/kafka-0.7.2.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/kafka-perf-0.7.2.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/scala-compiler.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/scala-library.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/snappy-java-1.0.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/zkclient-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/kafka-deps/zookeeper-3.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/logging/jcl-over-slf4j-1.6.6.jar"/>
+	<classpathentry kind="lib" path="lib/logging/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/logging/slf4j-api-1.6.6.jar"/>
+	<classpathentry kind="lib" path="lib/logging/slf4j-log4j12-1.6.6.jar"/>
+	<classpathentry kind="lib" path="lib/quartz/quartz-1.8.6.jar"/>
+	<classpathentry kind="lib" path="lib/spring/cglib-nodep-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.aop-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.asm-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.aspects-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.beans-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.context-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.context.support-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.core-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.expression-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring/org.springframework.transaction-3.1.2.RELEASE.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
