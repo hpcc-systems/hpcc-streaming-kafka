@@ -24,11 +24,12 @@ This must be configured according to message throughput and cluster availability
 Installation Steps:
 ----------
 
+- See <b>Building with Gradle</b> below for changes in the installation steps (supersedes these installation instructions).
 - Make changes to DataConsumer.properties to point to Apache Kafka Cluster.
-- Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath. 
-  <i><b>As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.</b></i>
-- Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath.
-- Add Log4j jar file to the classpath.
+- Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath.  <b>DEPRECATED</b>
+  <i><b>As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.</b> <b>DEPRECATED</b></i>
+- Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath. <b>DEPRECATED</b>
+- Add Log4j jar file to the classpath. <b>DEPRECATED</b>
 - Restart the cluster.
 
 Usage:
@@ -70,4 +71,10 @@ Below are the high level steps that we perform for each incoming file: <br />
 	    <li> Clear the SuperFile. </li>
 	</ol>
 </ol>
-<b>NOTE:</b> Step 7 is not yet implemented and will be availble in future version.
+<b>NOTE:</b> Step 7 is not yet implemented and will be available in a future version.<br />
+
+Building with Gradle:
+----------
+In the project root directory, execute <b>./gradlew build</b> - the build creates a single jar file containing this project's executable code as well as all its dependencies.
+
+Add this jar file to the classpath.
