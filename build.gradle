@@ -11,7 +11,7 @@ repositories {
     }
 
     maven {
-        url "http://repo.mavenRepo.apache.org/mavenRepo2"
+        url "http://repo.maven.apache.org/maven2"
     }
 }
 
