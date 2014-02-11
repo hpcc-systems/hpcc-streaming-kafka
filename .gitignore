@@ -5,3 +5,8 @@ build/
 *.classpath
 *.project
 target/
+/bin
+/log
+/logs
+/debug.out
+/.vagrant
