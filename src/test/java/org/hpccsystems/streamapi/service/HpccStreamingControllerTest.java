@@ -23,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class HpccStreamingControllerTest {
 
-    private static final String BASE_URI = "http://localhost:8080/hpcc";
+    private static final String BASE_URI = "http://localhost:8080/hpcc/stream";
     
     @Autowired
     private HpccStreamingController controller;
@@ -51,7 +51,7 @@ public class HpccStreamingControllerTest {
         
         final RestTemplate restTemplate = new RestTemplate();
         
-        final String resourceUri = BASE_URI + "?topic=hpcc&groupId=0";
+        final String resourceUri = BASE_URI + "/hpcc";
         
         final ResponseEntity<HpccConsumerResponse> response = restTemplate.getForEntity(resourceUri, HpccConsumerResponse.class);
         

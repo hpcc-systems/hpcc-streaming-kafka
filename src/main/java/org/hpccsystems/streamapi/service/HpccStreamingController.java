@@ -50,16 +50,15 @@ public class HpccStreamingController {
         return new ResponseEntity<HpccProducerResponse>(response, HttpStatus.OK);
     }
 
-    @RequestMapping(method=GET, value="/{topic}/{groupId}")
+    @RequestMapping(method=GET, value="/{topic}")
     public @ResponseBody HttpEntity<HpccConsumerResponse> consume(
-            @PathVariable(value="topic") final String topic,
-            @PathVariable(value="groupId") final String groupId) {
+            @PathVariable(value="topic") final String topic) {
 
         HpccConsumerResponse response = null;
         try {
             final List<Message> messages = this.messageDao.receive(topic);
             
-            response = newDecoratedConsumerResponseFor(topic, groupId, messages);
+            response = newDecoratedConsumerResponseFor(topic, messages);
 
             return new ResponseEntity<HpccConsumerResponse>(response, OK);
             
@@ -78,27 +77,26 @@ public class HpccStreamingController {
                 .withSelfRel());
 
         response.add(linkTo(
-                methodOn(HpccStreamingController.class).consume(topic, "hpcc"))
+                methodOn(HpccStreamingController.class).consume(topic))
                 .withRel(LINK_REL_CONSUMER));
 
         return response;
     }
 
-    private HpccConsumerResponse newDecoratedConsumerResponseFor(final String topic, final String groupId,
-            final List<Message> messages) throws JsonProcessingException {
+    private HpccConsumerResponse newDecoratedConsumerResponseFor(final String topic, final List<Message> messages) throws JsonProcessingException {
         
         final String jsonMessages = toJsonString(messages);
         
         final HpccConsumerResponse response = new HpccConsumerResponse(jsonMessages);
 
-        response.add(linkTo(methodOn(HpccStreamingController.class).consume(topic, groupId))
+        response.add(linkTo(methodOn(HpccStreamingController.class).consume(topic))
                 .withSelfRel());
 
         final List<String> sampleData = new ArrayList<String>();
         sampleData.add("$data");
 
         response.add(linkTo(
-                methodOn(HpccStreamingController.class).produce("$topic", sampleData)).withRel(LINK_REL_PRODUCER));
+                methodOn(HpccStreamingController.class).produce(topic, sampleData)).withRel(LINK_REL_PRODUCER));
 
         return response;
     }
