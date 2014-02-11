@@ -23,6 +23,11 @@
         <appender-ref ref="rolling" />
     </logger>
 
+    <logger name="kafka" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="rolling" />
+    </logger>
+
     <root>
         <level value="INFO" />
         <appender-ref ref="rolling" />

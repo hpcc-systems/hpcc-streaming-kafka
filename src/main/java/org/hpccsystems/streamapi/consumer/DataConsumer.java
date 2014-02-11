@@ -18,80 +18,44 @@ import org.apache.log4j.Logger;
 
 public class DataConsumer {
 
-    private final Logger logger;
-    private String       serverUrl;
-    private String       serverConnectionTimeout;
-    private int          messageListSize;
-    private String       zkSyncTime;
-    private String       autoCommitInterval;
-    private String       consumerTimeout;
-    private String       initMessage       = "Not initialized";
-    private String       loggerInitialized = "Logger Not Initialized";
-    
-    public DataConsumer() {
-        this.logger = Logger.getLogger(DataConsumer.class);
-        if (this.logger != null) {
-            this.loggerInitialized = "Logger Initialized Successfully";
-            this.logger.info(this.loggerInitialized);
+    private static final Logger logger;
+    private static String       serverUrl;
+    private static String       serverConnectionTimeout;
+    private static int          messageListSize;
+    private static String       zkSyncTime;
+    private static String       autoCommitInterval;
+    private static String       consumerTimeout;
+    private static String       initMessage       = "Not initialized";
+    private static String       loggerInitialized = "Logger Not Initialized";
+
+    static {
+        logger = Logger.getLogger(DataConsumer.class);
+        if (logger != null) {
+            loggerInitialized = "Logger Initialized Successfully";
+            logger.info(loggerInitialized);
         }
 
         final Properties props = new Properties();
         final InputStream inputStream =
                 DataConsumer.class.getResourceAsStream("DataConsumer.properties");
         if (inputStream == null) {
-            this.initMessage = "Cannot Find the properties file DataConsumer.properties";
-            this.logger.info(this.initMessage);
+            initMessage = "Cannot Find the properties file DataConsumer.properties";
+            logger.info(initMessage);
         } else {
             try {
                 props.load(inputStream);
-                this.serverUrl = props.getProperty("serverUrl");
-                this.serverConnectionTimeout =
-                        props.getProperty("serverConnectionTimeout");
-                this.messageListSize =
-                        Integer.valueOf(props.getProperty("messageListSize"));
-                this.zkSyncTime = props.getProperty("zookeeper.sync.time.ms");
-                this.autoCommitInterval = props.getProperty("auto.commit.interval.ms");
-                this.consumerTimeout = props.getProperty("consumer.timeout.ms");
-                this.initMessage = "Completed Initialization";
+                serverUrl = props.getProperty("serverUrl");
+                serverConnectionTimeout = props.getProperty("serverConnectionTimeout");
+                messageListSize = Integer.valueOf(props.getProperty("messageListSize"));
+                zkSyncTime = props.getProperty("zookeeper.sync.time.ms");
+                autoCommitInterval = props.getProperty("auto.commit.interval.ms");
+                consumerTimeout = props.getProperty("consumer.timeout.ms");
+                initMessage = "Completed Initialization";
             } catch (final IOException e) {
-                this.logger.error(e.getMessage());
-                this.initMessage = e.getMessage();
+                logger.error(e.getMessage());
+                initMessage = e.getMessage();
             }
         }
-    }
-
-    /**
-     * This method will be called from HPCCSystems to fetch the data from Kafka and return
-     * it back to HPCC.
-     * 
-     * @param topic
-     * @param groupId
-     * @return Group of messages consumed.
-     */
-    public String consume(final String topic, final String groupId) {
-
-        final Properties props = new Properties();
-        props.put("zookeeper.connect", this.serverUrl);
-        props.put("group.id", groupId);
-        props.put("zookeeper.session.timeout.ms", this.serverConnectionTimeout);
-        props.put("zookeeper.sync.time.ms", this.zkSyncTime);
-        props.put("auto.commit.interval.ms", this.autoCommitInterval);
-        props.put("consumer.timeout.ms", this.consumerTimeout);
-
-        // Create the connection to the cluster
-        final ConsumerConfig consumerConfig = new ConsumerConfig(props);
-        final ConsumerConnector consumer =
-                Consumer.createJavaConsumerConnector(consumerConfig);
-
-        return consumeAsStream(topic, consumer);
-    }
-
-    public String initMessage() {
-        return this.initMessage;
-    }
-
-    public String isLoggerInitialized() {
-        return this.loggerInitialized;
     }
 
     /**
@@ -105,7 +69,8 @@ public class DataConsumer {
      * @param consumer
      * @return Group of messages consumed.
      */
-    private String consumeAsStream(final String topic, final ConsumerConnector consumer) {
+    private static String consumeAsStream(final String topic,
+            final ConsumerConnector consumer) {
         final Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(topic, 1);
         final Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap =
@@ -115,16 +80,16 @@ public class DataConsumer {
         final StringBuilder sb = new StringBuilder();
         int count = 0;
         try {
-            while (it.hasNext() && count < this.messageListSize) {
+            while (it.hasNext() && count < messageListSize) {
                 final String message = new String(it.next().message());
-                this.logger.info(message);
+                logger.info(message);
                 sb.append(message + "\n");
                 count++;
             }
         } catch (final ConsumerTimeoutException cte) {
             // Shutdown after reading specific messages
             consumer.shutdown();
-            this.logger.info(cte.getMessage());
+            logger.info(cte.getMessage());
             return sb.toString();
         }
 
@@ -132,4 +97,39 @@ public class DataConsumer {
 
         return sb.toString();
     }
+
+    /**
+     * This method will be called from HPCCSystems to fetch the data from Kafka and return
+     * it back to HPCC.
+     * 
+     * @param topic
+     * @param groupId
+     * @return Group of messages consumed.
+     */
+    public static String consume(final String topic, final String groupId) {
+
+        final Properties props = new Properties();
+        props.put("zookeeper.connect", serverUrl);
+        props.put("group.id", groupId);
+        props.put("zookeeper.session.timeout.ms", serverConnectionTimeout);
+        props.put("zookeeper.sync.time.ms", zkSyncTime);
+        props.put("auto.commit.interval.ms", autoCommitInterval);
+        props.put("consumer.timeout.ms", consumerTimeout);
+
+        // Create the connection to the cluster
+        final ConsumerConfig consumerConfig = new ConsumerConfig(props);
+        final ConsumerConnector consumer =
+                Consumer.createJavaConsumerConnector(consumerConfig);
+
+        return consumeAsStream(topic, consumer);
+    }
+
+    public static String initMessage() {
+        return initMessage;
+    }
+
+    public static String isLoggerInitialized() {
+        return loggerInitialized;
+    }
+
 }
