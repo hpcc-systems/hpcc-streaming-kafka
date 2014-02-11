@@ -17,109 +17,119 @@ import kafka.javaapi.consumer.ConsumerConnector;
 import org.apache.log4j.Logger;
 
 public class DataConsumer {
-	
-	private static final Logger logger;
-	private static String serverUrl;
-	private static String serverConnectionTimeout;
-	private static int messageListSize;
-	private static String zkSyncTime;
-	private static String autoCommitInterval;
-	private static String consumerTimeout;
-	private static String initMessage = "Not initialized";
-	private static String loggerInitialized = "Logger Not Initialized";
-	
-	static {
-		logger = Logger.getLogger(DataConsumer.class);
-		if(logger != null) {
-			loggerInitialized = "Logger Initialized Successfully";
-			logger.info(loggerInitialized);
-		}
-		
-		Properties props = new Properties();
-		InputStream inputStream = DataConsumer.class.getResourceAsStream("DataConsumer.properties");
-		if (inputStream == null) {
-			initMessage = "Cannot Find the properties file DataConsumer.properties";
-			logger.info(initMessage);
-		} else {
-			try {
-				props.load(inputStream);
-				serverUrl = props.getProperty("serverUrl");
-				serverConnectionTimeout = props.getProperty("serverConnectionTimeout");
-				messageListSize = Integer.valueOf(props.getProperty("messageListSize"));
-				zkSyncTime = props.getProperty("zookeeper.sync.time.ms");
-				autoCommitInterval = props.getProperty("auto.commit.interval.ms");
-				consumerTimeout = props.getProperty("consumer.timeout.ms");
-				initMessage = "Completed Initialization";
-			} catch (IOException e) {
-				logger.error(e.getMessage());
-				initMessage = e.getMessage();
-			}
-		}
-	}
-	
-	/**
-	 * Read Messages from Apache Kafka Brokers for a particular topic. We are using Non-Blocking Consumer since we need to read only specific number of messages for a topic.
-	 * messageListSize in DataConsumer.properties controls the number of messages to be fetched in one iteration.
-	 * @param topic
-	 * @param consumer
-	 * @return Group of messages consumed.
-	 */
-	private static String consumeAsStream(String topic, ConsumerConnector consumer) {
-		Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
+
+    private static final Logger logger;
+    private static String       serverUrl;
+    private static String       serverConnectionTimeout;
+    private static int          messageListSize;
+    private static String       zkSyncTime;
+    private static String       autoCommitInterval;
+    private static String       consumerTimeout;
+    private static String       initMessage       = "Not initialized";
+    private static String       loggerInitialized = "Logger Not Initialized";
+
+    static {
+        logger = Logger.getLogger(DataConsumer.class);
+        if (logger != null) {
+            loggerInitialized = "Logger Initialized Successfully";
+            logger.info(loggerInitialized);
+        }
+
+        final Properties props = new Properties();
+        final InputStream inputStream =
+                DataConsumer.class.getResourceAsStream("DataConsumer.properties");
+        if (inputStream == null) {
+            initMessage = "Cannot Find the properties file DataConsumer.properties";
+            logger.info(initMessage);
+        } else {
+            try {
+                props.load(inputStream);
+                serverUrl = props.getProperty("serverUrl");
+                serverConnectionTimeout = props.getProperty("serverConnectionTimeout");
+                messageListSize = Integer.valueOf(props.getProperty("messageListSize"));
+                zkSyncTime = props.getProperty("zookeeper.sync.time.ms");
+                autoCommitInterval = props.getProperty("auto.commit.interval.ms");
+                consumerTimeout = props.getProperty("consumer.timeout.ms");
+                initMessage = "Completed Initialization";
+            } catch (final IOException e) {
+                logger.error(e.getMessage());
+                initMessage = e.getMessage();
+            }
+        }
+    }
+
+    /**
+     * Read Messages from Apache Kafka Brokers for a particular topic. We are using
+     * Non-Blocking Consumer since we need to read only specific number of messages for a
+     * topic.
+     * messageListSize in DataConsumer.properties controls the number of messages to be
+     * fetched in one iteration.
+     * 
+     * @param topic
+     * @param consumer
+     * @return Group of messages consumed.
+     */
+    private static String consumeAsStream(final String topic,
+            final ConsumerConnector consumer) {
+        final Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(topic, 1);
-        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
-        KafkaStream<byte[], byte[]> stream = consumerMap.get(topic).get(0);
-        ConsumerIterator<byte[], byte[]> it = stream.iterator();
-        StringBuilder sb = new StringBuilder();
+        final Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap =
+                consumer.createMessageStreams(topicCountMap);
+        final KafkaStream<byte[], byte[]> stream = consumerMap.get(topic).get(0);
+        final ConsumerIterator<byte[], byte[]> it = stream.iterator();
+        final StringBuilder sb = new StringBuilder();
         int count = 0;
         try {
-        	while (it.hasNext() && count < messageListSize) { 
-            	String message = new String(it.next().message());
-            	logger.info(message);
-    			sb.append(message + "\n");
-    			count++;
+            while (it.hasNext() && count < messageListSize) {
+                final String message = new String(it.next().message());
+                logger.info(message);
+                sb.append(message + "\n");
+                count++;
             }
-        } catch(ConsumerTimeoutException cte) {
-        	// Shutdown after reading specific messages
-    		consumer.shutdown();
-    		logger.info(cte.getMessage());
-    		return sb.toString();
+        } catch (final ConsumerTimeoutException cte) {
+            // Shutdown after reading specific messages
+            consumer.shutdown();
+            logger.info(cte.getMessage());
+            return sb.toString();
         }
-        
+
         consumer.shutdown(); // Shutdown after reading specific messages
-        
+
         return sb.toString();
-	}
-	
-	/**
-	 * This method will be called from HPCCSystems to fetch the data from Kafka and return it back to HPCC.
-	 * @param topic
-	 * @param groupId
-	 * @return Group of messages consumed.
-	 */
-	public static String consume(String topic, String groupId) {
-		
-		Properties props = new Properties();
-		props.put("zookeeper.connect", serverUrl);
-		props.put("group.id", groupId);
-		props.put("zookeeper.session.timeout.ms", serverConnectionTimeout);
-		props.put("zookeeper.sync.time.ms", zkSyncTime);
+    }
+
+    /**
+     * This method will be called from HPCCSystems to fetch the data from Kafka and return
+     * it back to HPCC.
+     * 
+     * @param topic
+     * @param groupId
+     * @return Group of messages consumed.
+     */
+    public static String consume(final String topic, final String groupId) {
+
+        final Properties props = new Properties();
+        props.put("zookeeper.connect", serverUrl);
+        props.put("group.id", groupId);
+        props.put("zookeeper.session.timeout.ms", serverConnectionTimeout);
+        props.put("zookeeper.sync.time.ms", zkSyncTime);
         props.put("auto.commit.interval.ms", autoCommitInterval);
         props.put("consumer.timeout.ms", consumerTimeout);
 
-		// Create the connection to the cluster
-		ConsumerConfig consumerConfig = new ConsumerConfig(props);
-		ConsumerConnector consumer = Consumer.createJavaConsumerConnector(consumerConfig);
+        // Create the connection to the cluster
+        final ConsumerConfig consumerConfig = new ConsumerConfig(props);
+        final ConsumerConnector consumer =
+                Consumer.createJavaConsumerConnector(consumerConfig);
 
-		return consumeAsStream(topic, consumer);
-	}
-	
-	public static String initMessage() {
-		return initMessage;
-	}
-	
-	public static String isLoggerInitialized() {
-		return loggerInitialized;
-	}
-	
+        return consumeAsStream(topic, consumer);
+    }
+
+    public static String initMessage() {
+        return initMessage;
+    }
+
+    public static String isLoggerInitialized() {
+        return loggerInitialized;
+    }
+
 }

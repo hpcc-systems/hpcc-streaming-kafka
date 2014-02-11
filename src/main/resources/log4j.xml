@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="rolling" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="log/kafka-hpcc-service.log" />
+		<param name="Append" value="true" />
+        <param name="MaxBackupIndex" value="100" />
+        <param name="MaxFileSize" value="10MB" />
+		<param name="threshold" value="debug" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%p|%t|%d{yyyy-MM-dd}|%d{HH:mm:ss.SSS}|%c{1}|%m%n" />
+		</layout>
+	</appender>
+
+	<!-- Logging will take place in its own thread -->
+	<appender name="async" class="org.apache.log4j.AsyncAppender">
+		<appender-ref ref="rolling" />
+	</appender>
+
+    <logger name="org.hpccsystems.streamapi" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="rolling" />
+    </logger>
+
+    <logger name="kafka" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="rolling" />
+    </logger>
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="rolling" />
+    </root>
+
+</log4j:configuration>
