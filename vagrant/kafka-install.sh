@@ -25,8 +25,6 @@ founderror()
 
 exitscript()
 {
-        #remove lock file
-        #rm $lockfile
         exit 0
 }
 

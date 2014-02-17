@@ -28,28 +28,7 @@ exitscript()
         exit 0
 }
 
-
-# Download libxerces-c3.1 and libxalan-c111 (unavailable via apt-get)
-wget http://security.ubuntu.com/ubuntu/pool/universe/x/xerces-c/libxerces-c3.1_3.1.1-5_amd64.deb
-wget http://security.ubuntu.com/ubuntu/pool/universe/x/xalan/libxalan-c111_1.11-3_amd64.deb
-
-# Install libxerces-c3.1 and libxalan-c111
-sudo dpkg -i libxerces-c3.1_3.1.1-5_amd64.deb
-sudo dpkg -i libxalan-c111_1.11-3_amd64.deb
-
-# Install other dependencies
-sudo apt-get -f install -y libboost-regex1.53.0 libicu48 expect libarchive13
-
-# Install the HPCC Platform
-sudo dpkg -i /vagrant/vagrant/hpccsystems-platform_community-4.2.0-4saucy_amd64.deb
-
-# Create symbolic link needed by the HPCC Platform
-sudo ln -s /usr/lib/libbfd-2.23.2-system.so /usr/lib/libbfd-2.23.52-system.20130913.so
-
-# Install Java
-/vagrant/vagrant/java-install.sh
-
-# Start the HPCC Platform services
-sudo service hpcc-init start
-
-exitscript
+add-apt-repository -y ppa:webupd8team/java
+apt-get -y update
+/bin/echo debconf shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
+apt-get -y install oracle-java7-installer oracle-java7-set-default
