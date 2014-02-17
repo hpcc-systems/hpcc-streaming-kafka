@@ -10,3 +10,4 @@ target/
 /logs
 /debug.out
 /.vagrant
+/.settings

@@ -104,7 +104,7 @@ public class Application {
 
     public static class ProducerProps {
 
-//      @Value("${metadata.broker.list:192.168.22.30:9092}")
+//      @Value("${metadata.broker.list:192.168.22.20:9092}")
 //      private String metadataBrokerList;
 //
 //      @Value("${serializer.class:kafka.serializer.StringEncoder}")
@@ -119,7 +119,7 @@ public class Application {
       public Properties asProperties() {
           final Properties p = new Properties();
 
-          p.put("metadata.broker.list", "192.168.22.30:9092");
+          p.put("metadata.broker.list", "192.168.22.20:9092");
           p.put("serializer.class", "kafka.serializer.StringEncoder");
           p.put("producer.type", "async");
           p.put("request.required.acks", "1");

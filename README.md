@@ -1,7 +1,44 @@
 kafka-integration
 ----------
 
-This repository will contain the source code/documentation for streaming data using Apache Kafka and HPCC.
+This repository contains the source code/documentation for streaming data to HPCC using Apache Kafka
+via a Spring Framework (http://spring.io) based HTTP REST server.
+
+Prerequisites:
+----------
+
+- VirtualBox - https://www.virtualbox.org
+- Vagrant - http://www.vagrantup.com  
+
+VirtualBox is a platform for running virtual machine images.
+Vagrant is used to script the provisioning and running of the HPCC and Kafka VM images.
+
+Building with Gradle:
+----------
+From the project root directory, execute <b>./gradlew build</b> 
+
+The build creates a single "fat" jar file containing this project's executable code as well as all its dependencies.
+
+Add this jar file to the classpath on the HPCC VM.
+
+NOTE:  <b>./gradlew</b> may have DOS line endings (CR/LF) depending on your Git configuration.  
+If you are on a *nix machine you may need to execute <b>dos2unix <i>gradlew</i></b> for the build to execute.
+
+Provisioning and Running the Virtual Machines
+----------
+Make sure VirtualBox and Vagrant are installed (see Prerequisites).
+
+Open a command line window and navigate to the root directory of this project.
+
+Type <b>vagrant up --provision</b> to download, provision, and start the HPCC and Kafka
+virtual machines.  The first time this step is run it will take several minutes to download
+the needed files.
+ 
+Data Consumer Installation - HPCC Nodes:
+----------
+- Copy <b>build/libs/kafka-integration-n.n.n.jar</b> (created by the Gradle build) to each HPCC node 
+(including the THOR Master) and add it to the classpath.  (TODO automate this step)
+- Restart the HPCC cluster.
 
 Consumer:
 ----------
@@ -20,17 +57,6 @@ Apache Kafka Brokers/Zookeeper:
 ----------
 
 This must be configured according to message throughput and cluster availability.
-
-Installation Steps:
-----------
-
-- See <b>Building with Gradle</b> below for changes in the installation steps (supersedes these installation instructions).
-- Make changes to DataConsumer.properties to point to Apache Kafka Cluster.
-- Copy DataConsumer.properties and DataConsumer.class files on each node (Including THOR Master) and add it to classpath.  <b>DEPRECATED</b>
-  <i><b>As of now you would need to manually copy this files to each node. This will be replaced by a script that will do it for you.</b> <b>DEPRECATED</b></i>
-- Add the Apache Kafka jars (kafka_2.8.0-0.8.0-beta1.jar, kafka-assembly-0.8.0-beta1-deps.jar) to the classpath. <b>DEPRECATED</b>
-- Add Log4j jar file to the classpath. <b>DEPRECATED</b>
-- Restart the cluster.
 
 Usage:
 ----------
@@ -72,9 +98,3 @@ Below are the high level steps that we perform for each incoming file: <br />
 	</ol>
 </ol>
 <b>NOTE:</b> Step 7 is not yet implemented and will be available in a future version.<br />
-
-Building with Gradle:
-----------
-In the project root directory, execute <b>./gradlew build</b> - the build creates a single jar file containing this project's executable code as well as all its dependencies.
-
-Add this jar file to the classpath.
