@@ -36,7 +36,7 @@ the needed files.
  
 Data Consumer Installation - HPCC Nodes:
 ----------
-- Copy <b>build/libs/kafka-integration-n.n.n.jar (created by the Gradle build) to each HPCC node 
+- Copy <b>build/libs/kafka-integration-n.n.n.jar</b> (created by the Gradle build) to each HPCC node 
 (including the THOR Master) and add it to the classpath.  (TODO automate this step)
 - Restart the HPCC cluster.
 
