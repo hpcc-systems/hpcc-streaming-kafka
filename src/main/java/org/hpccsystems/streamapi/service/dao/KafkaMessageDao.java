@@ -25,9 +25,9 @@ public class KafkaMessageDao implements MessageDao {
     private ConsumerConnector        consumerConnector;
 
     @Override
-    public void send(final String topic, final List<String> data) {
+    public void send(final String topic, final List<String> keys, final List<String> messages) {
         final List<KeyedMessage<String, String>> keyedMessages =
-                newKeyedMessagesFrom(data, topic);
+                newKeyedMessagesFrom(topic, keys, messages);
 
         this.producer.send(keyedMessages);
     }
@@ -42,15 +42,17 @@ public class KafkaMessageDao implements MessageDao {
     }
 
     private List<KeyedMessage<String, String>> newKeyedMessagesFrom(
-            final List<String> data, final String topic) {
-        final List<KeyedMessage<String, String>> keyedMessages =
-                new ArrayList<KeyedMessage<String, String>>(data.size());
+            final String topic, final List<String> keys, final List<String> messages) {
 
-        for (final String datum : data) {
+        final List<KeyedMessage<String, String>> keyedMessages =
+                new ArrayList<KeyedMessage<String, String>>(keys.size());
+
+        for (int i = 0; i < keys.size(); i++) {
             final KeyedMessage<String, String> keyedMessage =
-                    new KeyedMessage<String, String>(topic, datum);
+                    new KeyedMessage<String, String>(topic, keys.get(i), messages.get(i));
             keyedMessages.add(keyedMessage);
         }
+
         return keyedMessages;
     }
 

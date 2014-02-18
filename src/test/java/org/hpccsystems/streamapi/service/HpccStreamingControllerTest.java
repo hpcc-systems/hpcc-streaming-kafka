@@ -16,6 +16,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
@@ -41,9 +42,9 @@ public class HpccStreamingControllerTest {
         final RestTemplate restTemplate = new RestTemplate();
         
         final List<String> request = new ArrayList<String>();
-        request.add("data1");
+//        request.add("data1");
         
-        restTemplate.postForEntity(BASE_URI, request, HpccProducerResponse.class);
+        restTemplate.postForEntity(BASE_URI, request, ResourceSupport.class);
     }
 
     @Test(expected=RestClientException.class)
@@ -51,9 +52,10 @@ public class HpccStreamingControllerTest {
         
         final RestTemplate restTemplate = new RestTemplate();
         
-        final String resourceUri = BASE_URI + "/hpcc";
+        final String resourceUri = BASE_URI + "/http";
         
-        final ResponseEntity<HpccConsumerResponse> response = restTemplate.getForEntity(resourceUri, HpccConsumerResponse.class);
+        final ResponseEntity<ResourceSupport> response =
+            restTemplate.getForEntity(resourceUri, ResourceSupport.class);
         
         assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
 //        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
