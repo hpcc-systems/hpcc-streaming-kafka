@@ -22,7 +22,7 @@ public class Message {
     private String       key;
 
     @JsonProperty
-    private List<String> data;
+    private List<String> messages;
 
     @JsonProperty
     private final int    partition;
@@ -40,7 +40,7 @@ public class Message {
                 new ObjectInputStream(new ByteArrayInputStream(message.message()));) {
 
             this.key = new String(message.key(), UTF_8);
-            this.data = (List<String>) ois.readObject();
+            this.messages = (List<String>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new HpccStreamingException(e);
         }
@@ -57,8 +57,8 @@ public class Message {
         return this.key;
     }
 
-    public List<String> getData() {
-        return this.data;
+    public List<String> getMessages() {
+        return this.messages;
     }
 
     public int getPartition() {
@@ -71,8 +71,8 @@ public class Message {
 
     @Override
     public String toString() {
-        return "Message [topic=" + this.topic + ", key=" + this.key + ", data="
-                + this.data + ", partition=" + this.partition + ", offset=" + this.offset
+        return "Message [topic=" + this.topic + ", key=" + this.key + ", messages="
+                + this.messages + ", partition=" + this.partition + ", offset=" + this.offset
                 + "]";
     }
 }

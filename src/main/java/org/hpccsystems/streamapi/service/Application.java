@@ -83,7 +83,7 @@ public class Application {
             p.put("consumer.timeout.ms", String.format("%d", timeoutMs != null
                     ? timeoutMs
                     : "500"));
-            p.put("messageListSize", "500");
+//            p.put("messageListSize", "500");
             p.put("group.id", "hpcc");
 
             p.put("auto.offset.reset", OffsetRequest.SmallestTimeString());
@@ -121,7 +121,7 @@ public class Application {
 
           p.put("metadata.broker.list", "192.168.22.20:9092");
           p.put("serializer.class", "kafka.serializer.StringEncoder");
-          p.put("producer.type", "async");
+          p.put("producer.type", "sync");
           p.put("request.required.acks", "1");
 
           return p;

@@ -7,12 +7,12 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hpccsystems.streamapi.common.HpccStreamingException;
 import org.hpccsystems.streamapi.service.dao.MessageDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,74 +31,102 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping("/hpcc/stream")
 public class HpccStreamingController {
 
-    private static final String LINK_REL_PRODUCER = "producer";
-
     private static final String LINK_REL_RESOURCE = "resource";
 
     @Autowired
     private MessageDao messageDao;
 
     @RequestMapping(method=POST)
-    public @ResponseBody HttpEntity<HpccProducerResponse> produce(
+    public @ResponseBody HttpEntity<? extends ResourceSupport> produce(
             @RequestParam(value="topic", required=true) final String topic,
-            @RequestParam(value="data", required=true) final List<String> data) {
+            @RequestParam(value="key", required=true) final List<String> keys,
+            @RequestParam(value="message", required=true) final List<String> messages) {
 
-        this.messageDao.send(topic, data);
+        if (keys.size() != messages.size()) {
+            return handleProduceError(topic, keys, messages);
+        }
+        
+        this.messageDao.send(topic, keys, messages);
 
-        final HpccProducerResponse response = newDecoratedProducerResponseFor(topic, data);
+        final HpccProducerResponse response = newDecoratedProducerResponseFor(topic, keys, messages);
 
         return new ResponseEntity<HpccProducerResponse>(response, HttpStatus.OK);
     }
 
     @RequestMapping(method=GET, value="/{topic}")
-    public @ResponseBody HttpEntity<HpccConsumerResponse> consume(
+    public @ResponseBody HttpEntity<? extends ResourceSupport> consume(
             @PathVariable(value="topic") final String topic) {
 
-        HpccConsumerResponse response = null;
         try {
             final List<Message> messages = this.messageDao.receive(topic);
 
-            response = newDecoratedConsumerResponseFor(topic, messages);
+            final HpccConsumerResponse response = 
+                newDecoratedConsumerResponseFor(topic, messages);
 
             return new ResponseEntity<HpccConsumerResponse>(response, OK);
 
-        } catch (JsonProcessingException | HpccStreamingException e) {
-            return new ResponseEntity<HpccConsumerResponse>(response, INTERNAL_SERVER_ERROR);
+        } catch (JsonProcessingException e) {
+            final HpccStreamingException wrapEx = new HpccStreamingException(e);
+            
+            return handleConsumeError(topic, wrapEx);
+            
+        } catch (HpccStreamingException e) {
+            
+            return handleConsumeError(topic, e);
         }
     }
 
+    private HttpEntity<? extends ResourceSupport> handleProduceError(final String topic,
+            final List<String> keys, final List<String> messages) {
+        final ErrorResponse errorResponse =
+                new ErrorResponse("Key count and message count must be equal");
+
+        addSelfRelProduceLink(topic, keys, messages, errorResponse);
+
+        return new ResponseEntity<ErrorResponse>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    private HttpEntity<? extends ResourceSupport> handleConsumeError(final String topic,
+            final HpccStreamingException e) {
+        final ErrorResponse response = new ErrorResponse(e.getMessage());
+
+        addResourceRelLink(topic, response);
+        
+        return new ResponseEntity<ErrorResponse>(response, INTERNAL_SERVER_ERROR);
+    }
+
     private HpccProducerResponse newDecoratedProducerResponseFor(final String topic,
-            final List<String> messages) {
+            final List<String> keys, final List<String> messages) {
 
         final HpccProducerResponse response = new HpccProducerResponse();
 
-        response.add(linkTo(
-                methodOn(HpccStreamingController.class).produce(topic, messages))
-                .withSelfRel());
+        addSelfRelProduceLink(topic, keys, messages, response);
 
-        response.add(linkTo(
-                methodOn(HpccStreamingController.class).consume(topic))
-                .withRel(LINK_REL_RESOURCE));
+        addResourceRelLink(topic, response);
 
         return response;
     }
 
-    private HpccConsumerResponse newDecoratedConsumerResponseFor(final String topic, final List<Message> messages) throws JsonProcessingException {
+    private HpccConsumerResponse newDecoratedConsumerResponseFor(final String topic,
+            final List<Message> messages) throws JsonProcessingException {
 
         final String jsonMessages = toJsonString(messages);
 
-        final HpccConsumerResponse response = new HpccConsumerResponse(jsonMessages);
+        return new HpccConsumerResponse(jsonMessages);
+    }
 
-        response.add(linkTo(methodOn(HpccStreamingController.class).consume(topic))
-                .withSelfRel());
-
-        final List<String> sampleData = new ArrayList<String>();
-        sampleData.add("$data");
-
+    private void addSelfRelProduceLink(final String topic, final List<String> keys,
+            final List<String> messages, final ResourceSupport response) {
+        
         response.add(linkTo(
-                methodOn(HpccStreamingController.class).produce(topic, sampleData)).withRel(LINK_REL_PRODUCER));
+                methodOn(HpccStreamingController.class).produce(topic, keys, messages))
+                .withSelfRel());
+    }
 
-        return response;
+    private void addResourceRelLink(final String topic, final ResourceSupport response) {
+        response.add(linkTo(
+                methodOn(HpccStreamingController.class).consume(topic))
+                .withRel(LINK_REL_RESOURCE));
     }
 
     private String toJsonString(final List<Message> messages)
