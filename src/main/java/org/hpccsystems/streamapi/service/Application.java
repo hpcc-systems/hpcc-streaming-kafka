@@ -12,26 +12,46 @@ import kafka.producer.ProducerConfig;
 
 import org.hpccsystems.streamapi.service.dao.KafkaMessageDao;
 import org.hpccsystems.streamapi.service.dao.MessageDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan(basePackages="org.hpccsystems.streamapi")
-//@PropertySource("classpath:/application.properties")
+@PropertySource("classpath:application.properties")
 public class Application {
 
-    private static final int TEN_SECONDS = 10 * 1000;
+    private static final int TEN_SECONDS = 10_000;
+    
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
+    /**
+     * Entry point for the Kafka Integration application.
+     * 
+     * Spring Boot bootstraps, configures, and runs the application
+     * in an embedded application container.
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         final SpringApplication app = new SpringApplication(Application.class);
         app.setShowBanner(false);
         app.run();
     }
 
+    @Autowired
+    private Environment env;
+    
     @Bean
     public MessageDao messageDao() {
         return new KafkaMessageDao();
@@ -39,99 +59,73 @@ public class Application {
 
     @Bean
     public Producer<String, String> producer() {
-        final ProducerConfig pConfig = new ProducerConfig(new ProducerProps().asProperties());
+        final ProducerConfig pConfig = new ProducerConfig(producerProps().asProperties());
         return new Producer<String, String>(pConfig);
     }
 
     @Bean
     public ConsumerConnector consumerConnector() {
         final ConsumerConfig cConfig = 
-                new ConsumerConfig(new ConsumerProps().asProperties(TEN_SECONDS));
+                new ConsumerConfig(consumerProps().asProperties(TEN_SECONDS));
         return Consumer.createJavaConsumerConnector(cConfig);
     }
     
-    public static class ConsumerProps {
+    @Bean
+    public ConsumerProps consumerProps() {
+        return new ConsumerProps();
+    }
+    
+    @Bean
+    public ProducerProps producerProps() {
+        return new ProducerProps();
+    }
+    
+    public class ConsumerProps {
 
-//        @Value("${zookeeper.connect:192.168.22.20:2181}")
-//        private String zookeeperConnect;
-//
-//        @Value("${zookeeper.session.timeout.ms:30000}")
-//        private String zookeeperSessionTimeoutMs;
-//
-//        @Value("${zookeeper.sync.time.ms:200}")
-//        private String zookeeperSyncTimeMs;
-//
-//        @Value("${auto.commit.interval.ms:1000}")
-//        private String autoCommitIntervalMs;
-//
-//        @Value("${consumer.timeout.ms:500}")
-//        private String consumerTimeoutMs;
-//
-//        @Value("${messageListSize:500}")
-//        private String messageListSize;
-//
-//        @Value("${group.id:hpcc}")
-//        private String groupId;
+        private static final String ZOOKEEPER_CONNECT            = "zookeeper.connect";
+        private static final String ZOOKEEPER_SESSION_TIMEOUT_MS = "zookeeper.session.timeout.ms";
+        private static final String ZOOKEEPER_SYNC_TIME_MS       = "zookeeper.sync.time.ms";
+        private static final String AUTO_COMMIT_INTERVAL_MS      = "auto.commit.interval.ms";
+        private static final String CONSUMER_TIMEOUT_MS          = "consumer.timeout.ms";
+        private static final String MESSAGE_LIST_SIZE            = "messageListSize";
+        private static final String GROUP_ID                     = "group.id";
+        private static final String AUTO_OFFSET_RESET            = "auto.offset.reset";
 
         public Properties asProperties(final Integer timeoutMs) {
             final Properties p = new Properties();
 
-            p.put("zookeeper.connect", "192.168.22.20:2181");
-            p.put("zookeeper.session.timeout.ms", "30000");
-            p.put("zookeeper.sync.time.ms", "200");
-            p.put("auto.commit.interval.ms", "1000");
-            p.put("consumer.timeout.ms", String.format("%d", timeoutMs != null
+            p.put(ZOOKEEPER_CONNECT, env.getProperty(ZOOKEEPER_CONNECT));
+            p.put(ZOOKEEPER_SESSION_TIMEOUT_MS, env.getProperty(ZOOKEEPER_SESSION_TIMEOUT_MS));
+            p.put(ZOOKEEPER_SYNC_TIME_MS, env.getProperty(ZOOKEEPER_SYNC_TIME_MS));
+            p.put(AUTO_COMMIT_INTERVAL_MS, env.getProperty(AUTO_COMMIT_INTERVAL_MS));
+            p.put(CONSUMER_TIMEOUT_MS, String.format("%d", timeoutMs != null
                     ? timeoutMs
-                    : "500"));
-//            p.put("messageListSize", "500");
-            p.put("group.id", "hpcc");
+                    : env.getProperty(CONSUMER_TIMEOUT_MS)));
+            p.put(MESSAGE_LIST_SIZE, env.getProperty(MESSAGE_LIST_SIZE));
+            p.put(GROUP_ID, env.getProperty(GROUP_ID));
 
-            p.put("auto.offset.reset", OffsetRequest.SmallestTimeString());
+            p.put(AUTO_OFFSET_RESET, OffsetRequest.SmallestTimeString());
 
             return p;
         }
-
-//        @Override
-//        public String toString() {
-//            return "ConsumerProps [zookeeperConnect=" + this.zookeeperConnect
-//                    + ", zookeeperSessionTimeoutMs=" + this.zookeeperSessionTimeoutMs
-//                    + ", zookeeperSyncTimeMs=" + this.zookeeperSyncTimeMs
-//                    + ", autoCommitIntervalMs=" + this.autoCommitIntervalMs
-//                    + ", consumerTimeoutMs=" + this.consumerTimeoutMs + ", messageListSize="
-//                    + this.messageListSize + ", groupId=" + this.groupId + "]";
-//        }
     }
 
-    public static class ProducerProps {
+    public class ProducerProps {
 
-//      @Value("${metadata.broker.list:192.168.22.20:9092}")
-//      private String metadataBrokerList;
-//
-//      @Value("${serializer.class:kafka.serializer.StringEncoder}")
-//      private String serializerClass;
-//
-//      @Value("${producer.type:async}")
-//      private String producerType;
-//
-//      @Value("${request.required.acks:1}")
-//      private String requestRequiredAcks;
+        private static final String METADATA_BROKER_LIST  = "metadata.broker.list";
+        private static final String SERIALIZER_CLASS      = "serializer.class";
+        private static final String PRODUCER_TYPE         = "producer.type";
+        private static final String REQUEST_REQUIRED_ACKS = "request.required.acks";
 
-      public Properties asProperties() {
+    public Properties asProperties() {
           final Properties p = new Properties();
 
-          p.put("metadata.broker.list", "192.168.22.20:9092");
-          p.put("serializer.class", "kafka.serializer.StringEncoder");
-          p.put("producer.type", "sync");
-          p.put("request.required.acks", "1");
+          p.put(METADATA_BROKER_LIST, env.getProperty(METADATA_BROKER_LIST));
+          p.put(SERIALIZER_CLASS, env.getProperty(SERIALIZER_CLASS));
+          p.put(PRODUCER_TYPE, env.getProperty(PRODUCER_TYPE));
+          p.put(REQUEST_REQUIRED_ACKS, env.getProperty(REQUEST_REQUIRED_ACKS));
 
           return p;
       }
-
-//        @Override
-//        public String toString() {
-//            return "ProducerProps [metadataBrokerList=" + this.metadataBrokerList
-//                    + ", serializerClass=" + this.serializerClass + ", producerType="
-//                    + this.producerType + ", requestRequiredAcks=" + this.requestRequiredAcks + "]";
-//        }
     }
 }
