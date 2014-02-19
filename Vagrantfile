@@ -37,6 +37,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     hpcc4_2.vm.network :private_network, ip: "192.168.22.10"
 
+    hpcc4_2.vm.synced_folder "build/libs", "/tmp/libs"
+
     hpcc4_2.vm.provision "shell", path: "vagrant/hpcc.sh"
   end
   
