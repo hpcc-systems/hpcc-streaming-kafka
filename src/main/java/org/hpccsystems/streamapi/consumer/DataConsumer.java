@@ -25,6 +25,7 @@ public class DataConsumer {
     private static String       zkSyncTime;
     private static String       autoCommitInterval;
     private static String       consumerTimeout;
+    private static String       groupId;
     private static String       initMessage       = "Not initialized";
     private static String       loggerInitialized = "Logger Not Initialized";
 
@@ -50,6 +51,7 @@ public class DataConsumer {
                 zkSyncTime = props.getProperty("zookeeper.sync.time.ms");
                 autoCommitInterval = props.getProperty("auto.commit.interval.ms");
                 consumerTimeout = props.getProperty("consumer.timeout.ms");
+                groupId = props.getProperty("group.id");
                 initMessage = "Completed Initialization";
             } catch (final IOException e) {
                 logger.error(e.getMessage());
@@ -115,6 +117,7 @@ public class DataConsumer {
         props.put("zookeeper.sync.time.ms", zkSyncTime);
         props.put("auto.commit.interval.ms", autoCommitInterval);
         props.put("consumer.timeout.ms", consumerTimeout);
+        props.put("group.id", groupId);
 
         // Create the connection to the cluster
         final ConsumerConfig consumerConfig = new ConsumerConfig(props);
@@ -132,4 +135,9 @@ public class DataConsumer {
         return loggerInitialized;
     }
 
+    public static void main(final String[] args) {
+        final String result = consume("http", "hpcc");
+        
+        System.out.println(result);
+    }
 }
