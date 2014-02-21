@@ -55,6 +55,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-actuator:1.0.0.RC1'
     
     testCompile 'org.springframework:spring-test:4.0.1.RELEASE'
+    testCompile 'com.jayway.restassured:rest-assured:2.3.0'
+    testCompile 'com.jayway.restassured:json-path:2.3.0'
     testCompile 'junit:junit:4.11'
     testCompile 'org.jmock:jmock:2.6.0'
     testCompile 'org.jmock:jmock-junit4:2.6.0'

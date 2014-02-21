@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Controller
-@RequestMapping("/hpcc/stream")
+@RequestMapping("/hpccstream")
 public class HpccStreamingController {
 
     private static final String LINK_REL_RESOURCE = "resource";

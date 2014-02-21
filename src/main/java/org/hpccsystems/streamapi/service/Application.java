@@ -3,10 +3,9 @@ package org.hpccsystems.streamapi.service;
 
 import java.util.Properties;
 
-import kafka.api.OffsetRequest;
-import kafka.consumer.Consumer;
+import javax.annotation.PreDestroy;
+
 import kafka.consumer.ConsumerConfig;
-import kafka.javaapi.consumer.ConsumerConnector;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;
 
@@ -64,10 +63,15 @@ public class Application {
     }
 
     @Bean
-    public ConsumerConnector consumerConnector() {
+    public ProducerProps producerProps() {
+        return new ProducerProps();
+    }
+    
+    @Bean
+    public ConsumerConfig consumerConfig() {
         final ConsumerConfig cConfig = 
                 new ConsumerConfig(consumerProps().asProperties(TEN_SECONDS));
-        return Consumer.createJavaConsumerConnector(cConfig);
+        return cConfig;
     }
     
     @Bean
@@ -75,39 +79,9 @@ public class Application {
         return new ConsumerProps();
     }
     
-    @Bean
-    public ProducerProps producerProps() {
-        return new ProducerProps();
-    }
-    
-    public class ConsumerProps {
-
-        private static final String ZOOKEEPER_CONNECT            = "zookeeper.connect";
-        private static final String ZOOKEEPER_SESSION_TIMEOUT_MS = "zookeeper.session.timeout.ms";
-        private static final String ZOOKEEPER_SYNC_TIME_MS       = "zookeeper.sync.time.ms";
-        private static final String AUTO_COMMIT_INTERVAL_MS      = "auto.commit.interval.ms";
-        private static final String CONSUMER_TIMEOUT_MS          = "consumer.timeout.ms";
-        private static final String MESSAGE_LIST_SIZE            = "messageListSize";
-        private static final String GROUP_ID                     = "group.id";
-        private static final String AUTO_OFFSET_RESET            = "auto.offset.reset";
-
-        public Properties asProperties(final Integer timeoutMs) {
-            final Properties p = new Properties();
-
-            p.put(ZOOKEEPER_CONNECT, env.getProperty(ZOOKEEPER_CONNECT));
-            p.put(ZOOKEEPER_SESSION_TIMEOUT_MS, env.getProperty(ZOOKEEPER_SESSION_TIMEOUT_MS));
-            p.put(ZOOKEEPER_SYNC_TIME_MS, env.getProperty(ZOOKEEPER_SYNC_TIME_MS));
-            p.put(AUTO_COMMIT_INTERVAL_MS, env.getProperty(AUTO_COMMIT_INTERVAL_MS));
-            p.put(CONSUMER_TIMEOUT_MS, String.format("%d", timeoutMs != null
-                    ? timeoutMs
-                    : env.getProperty(CONSUMER_TIMEOUT_MS)));
-            p.put(MESSAGE_LIST_SIZE, env.getProperty(MESSAGE_LIST_SIZE));
-            p.put(GROUP_ID, env.getProperty(GROUP_ID));
-
-            p.put(AUTO_OFFSET_RESET, OffsetRequest.SmallestTimeString());
-
-            return p;
-        }
+    @PreDestroy
+    public void shutdown() {
+        producer().close();
     }
 
     public class ProducerProps {
@@ -127,5 +101,27 @@ public class Application {
 
           return p;
       }
+    }
+    
+    public class ConsumerProps {
+
+        private static final String ZOOKEEPER_CONNECT            = "zookeeper.connect";
+        private static final String CONSUMER_TIMEOUT_MS          = "consumer.timeout.ms";
+        private static final String GROUP_ID                     = "group.id";
+        private static final String AUTO_OFFSET_RESET            = "auto.offset.reset";
+
+        public Properties asProperties(final Integer timeoutMs) {
+            final Properties p = new Properties();
+
+            p.put(ZOOKEEPER_CONNECT, env.getProperty(ZOOKEEPER_CONNECT));
+            p.put(CONSUMER_TIMEOUT_MS, String.format("%d", timeoutMs != null
+                    ? timeoutMs
+                    : env.getProperty(CONSUMER_TIMEOUT_MS)));
+            p.put(GROUP_ID, env.getProperty(GROUP_ID));
+
+            p.put(AUTO_OFFSET_RESET, env.getProperty(AUTO_OFFSET_RESET));
+
+            return p;
+        }
     }
 }

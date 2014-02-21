@@ -42,21 +42,38 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     hpcc4_2.vm.provision "shell", path: "vagrant/hpcc.sh"
   end
   
-  # VM provisioning for the Apache Kafka node
-  config.vm.define "kafka" do |kafka|
-    kafka.vm.box = BASE_BOX_NAME
+  # VM provisioning for the Zookeeper node
+  config.vm.define "zookeeper" do |zookeeper|
+    zookeeper.vm.box = BASE_BOX_NAME
 
-    # The url from where the 'kafka.vm.box' box will be fetched if it
+    # The url from where the 'zookeeper.vm.box' box will be fetched if it
     # doesn't already exist on the user's system.
-    kafka.vm.box_url = BASE_BOX_URL
+    zookeeper.vm.box_url = BASE_BOX_URL
 
-    kafka.vm.network :private_network, ip: "192.168.22.20"
+    zookeeper.vm.network :private_network, ip: "192.168.22.20"
     
-    kafka.vm.provider :virtualbox do |vb|
+    zookeeper.vm.provider :virtualbox do |vb|
       vb.customize ["modifyvm", :id, "--memory", "1024"]
     end
     
-    kafka.vm.provision "shell", path: "vagrant/kafka.sh"
+    zookeeper.vm.provision "shell", path: "vagrant/zookeeper.sh"
+  end
+  
+  # VM provisioning for the Apache Kafka Broker node
+  config.vm.define "broker1" do |broker1|
+    broker1.vm.box = BASE_BOX_NAME
+
+    # The url from where the 'broker1.vm.box' box will be fetched if it
+    # doesn't already exist on the user's system.
+    broker1.vm.box_url = BASE_BOX_URL
+
+    broker1.vm.network :private_network, ip: "192.168.22.30"
+    
+    broker1.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "1024"]
+    end
+    
+    broker1.vm.provision "shell", path: "vagrant/broker.sh", :args => "1"
   end
 
 end

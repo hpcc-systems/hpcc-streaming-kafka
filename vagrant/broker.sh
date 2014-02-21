@@ -36,19 +36,17 @@ apt-get install -y software-properties-common python-software-properties screen 
 # Install Java
 /vagrant/vagrant/java-install.sh
 
-# TODO adjust
-# Configure Java environment
-export JAVA_HOME=/usr
-su vagrant -c "touch ~/.bashrc"
-su vagrant -c "echo 'export JAVA_HOME=/usr' >> ~/.bashrc"
-
 # Install Apache Kafka
 /vagrant/vagrant/kafka-install.sh
 
-# Start Apache Zookeeper and Kafka Broker
-/opt/apache/kafka/bin/zookeeper-server-start.sh /opt/apache/kafka/config/zookeeper.properties 1>> /tmp/zk.log 2>> /tmp/zk.log &
-sleep 5
-/opt/apache/kafka/bin/kafka-server-start.sh /opt/apache/kafka/config/server.properties 1>> /tmp/broker.log 2>> /tmp/broker.log &
+# Start Apache Kafka Broker
+IP=$(ifconfig  | grep 'inet addr:'| grep 168 | grep 192|cut -d: -f2 | awk '{ print $1}')
+sed 's/broker.id=0/'broker.id=$1'/' /opt/apache/kafka/config/server.properties > /tmp/prop1.tmp
+sed 's/#advertised.host.name=<hostname routable by clients>/'advertised.host.name=$IP'/' /tmp/prop1.tmp > /tmp/prop2.tmp
+sed 's/#host.name=localhost/'host.name=$IP'/' /tmp/prop2.tmp > /tmp/prop3.tmp
+sed 's/zookeeper.connect=localhost:2181/'zookeeper.connect=192.168.22.20:2181'/' /tmp/prop3.tmp > /opt/server.properties
+
+/opt/apache/kafka/bin/kafka-server-start.sh /opt/server.properties 1>> /tmp/broker.log 2>> /tmp/broker.log &
 
 ## TODO clean up
 #sleep 10

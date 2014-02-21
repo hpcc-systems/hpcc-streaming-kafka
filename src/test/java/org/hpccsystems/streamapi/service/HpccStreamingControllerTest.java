@@ -1,14 +1,13 @@
 package org.hpccsystems.streamapi.service;
 
+import static com.jayway.restassured.RestAssured.get;
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.hpccsystems.streamapi.service.dao.MessageDao;
 import org.hpccsystems.streamapi.service.dao.TestMessageDaoStub;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -16,16 +15,12 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+
+import com.jayway.restassured.http.ContentType;
 
 public class HpccStreamingControllerTest {
 
-    private static final String BASE_URI = "http://localhost:8080/hpcc/stream";
-    
     @Autowired
     private HpccStreamingController controller;
     
@@ -37,31 +32,25 @@ public class HpccStreamingControllerTest {
     }
   
     
-    @Test(expected=RestClientException.class)
+    @Ignore
+    @Test
     public void must_produce_ok() {
-        final RestTemplate restTemplate = new RestTemplate();
-        
-        final List<String> request = new ArrayList<String>();
-//        request.add("data1");
-        
-        restTemplate.postForEntity(BASE_URI, request, ResourceSupport.class);
+        given()
+            .contentType(ContentType.JSON)
+            .body("{ topic: \"http\", key: \"0\", message: \"abc\"}")
+        .then()
+            .expect().body(equalTo("foo"))
+        .when()
+            .post("/hpccstream");
     }
 
-    @Test(expected=RestClientException.class)
+    @Ignore
+    @Test
     public void must_consume_ok() throws RestClientException {
         
-        final RestTemplate restTemplate = new RestTemplate();
-        
-        final String resourceUri = BASE_URI + "/http";
-        
-        final ResponseEntity<ResourceSupport> response =
-            restTemplate.getForEntity(resourceUri, ResourceSupport.class);
-        
-        assertThat(response.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
-//        assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-//        assertThat(response.getBody().getId().getRel(), equalTo(Link.REL_SELF));
-        
-        System.out.println(response);
+        get("/hpccstream/http")
+        .then()
+            .assertThat().statusCode(equalTo(200));
 
     }
 
