@@ -7,14 +7,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import org.hpccsystems.streamapi.service.dao.MessageDao;
 import org.hpccsystems.streamapi.service.dao.TestMessageDaoStub;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestClientException;
 
 import com.jayway.restassured.http.ContentType;
@@ -32,19 +34,18 @@ public class HpccStreamingControllerTest {
     }
   
     
-    @Ignore
     @Test
     public void must_produce_ok() {
         given()
-            .contentType(ContentType.JSON)
-            .body("{ topic: \"http\", key: \"0\", message: \"abc\"}")
-        .then()
-            .expect().body(equalTo("foo"))
+            .formParam("topic", "http")
+            .formParam("key", 0)
+            .formParam("message", "abc")
         .when()
-            .post("/hpccstream");
+            .post("/hpccstream")
+        .then()
+            .assertThat().statusCode(equalTo(200));
     }
 
-    @Ignore
     @Test
     public void must_consume_ok() throws RestClientException {
         
@@ -55,6 +56,9 @@ public class HpccStreamingControllerTest {
     }
 
     @Configuration
+    @EnableAutoConfiguration
+    @ComponentScan(basePackages="org.hpccsystems.streamapi")
+    @PropertySource("classpath:application.properties")
     public static class TestConfig {
 
         @Bean
