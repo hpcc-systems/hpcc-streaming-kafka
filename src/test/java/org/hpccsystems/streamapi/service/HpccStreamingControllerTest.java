@@ -1,6 +1,5 @@
 package org.hpccsystems.streamapi.service;
 
-import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 
@@ -17,9 +16,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.client.RestClientException;
-
-import com.jayway.restassured.http.ContentType;
 
 public class HpccStreamingControllerTest {
 
@@ -44,15 +40,6 @@ public class HpccStreamingControllerTest {
             .post("/hpccstream")
         .then()
             .assertThat().statusCode(equalTo(200));
-    }
-
-    @Test
-    public void must_consume_ok() throws RestClientException {
-        
-        get("/hpccstream/http")
-        .then()
-            .assertThat().statusCode(equalTo(200));
-
     }
 
     @Configuration
