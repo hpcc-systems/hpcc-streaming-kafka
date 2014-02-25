@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import javax.annotation.PreDestroy;
 
-import kafka.consumer.ConsumerConfig;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.ProducerConfig;
 
@@ -27,8 +26,6 @@ import org.springframework.core.env.Environment;
 @PropertySource("classpath:application.properties")
 public class Application {
 
-    private static final int TEN_SECONDS = 10_000;
-    
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
@@ -67,18 +64,6 @@ public class Application {
         return new ProducerProps();
     }
     
-    @Bean
-    public ConsumerConfig consumerConfig() {
-        final ConsumerConfig cConfig = 
-                new ConsumerConfig(consumerProps().asProperties(TEN_SECONDS));
-        return cConfig;
-    }
-    
-    @Bean
-    public ConsumerProps consumerProps() {
-        return new ConsumerProps();
-    }
-    
     @PreDestroy
     public void shutdown() {
         producer().close();
@@ -101,27 +86,5 @@ public class Application {
 
           return p;
       }
-    }
-    
-    public class ConsumerProps {
-
-        private static final String ZOOKEEPER_CONNECT            = "zookeeper.connect";
-        private static final String CONSUMER_TIMEOUT_MS          = "consumer.timeout.ms";
-        private static final String GROUP_ID                     = "group.id";
-        private static final String AUTO_OFFSET_RESET            = "auto.offset.reset";
-
-        public Properties asProperties(final Integer timeoutMs) {
-            final Properties p = new Properties();
-
-            p.put(ZOOKEEPER_CONNECT, env.getProperty(ZOOKEEPER_CONNECT));
-            p.put(CONSUMER_TIMEOUT_MS, String.format("%d", timeoutMs != null
-                    ? timeoutMs
-                    : env.getProperty(CONSUMER_TIMEOUT_MS)));
-            p.put(GROUP_ID, env.getProperty(GROUP_ID));
-
-            p.put(AUTO_OFFSET_RESET, env.getProperty(AUTO_OFFSET_RESET));
-
-            return p;
-        }
     }
 }
