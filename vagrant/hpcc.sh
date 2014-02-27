@@ -51,8 +51,8 @@ sudo ln -s /usr/lib/libbfd-2.23.2-system.so /usr/lib/libbfd-2.23.52-system.20130
 
 # Add project Java jar executable to classpath
 sudo mkdir -p /opt/HPCCSystems/javalib
-sudo sed -i.ORIG 's|\(classpath=/opt/HPCCSystems/classes\)|\1:/opt/HPCCSystems/javalib/kafka-integration-0.8.0.jar|' /etc/HPCCSystems/environment.conf
-sudo cp /tmp/libs/kafka-integration-0.8.0.jar /opt/HPCCSystems/javalib
+sudo sed -i.ORIG 's|\(classpath=/opt/HPCCSystems/classes\)|\1:/opt/HPCCSystems/javalib/hpcc-streaming-kafka-0.8.0.jar|' /etc/HPCCSystems/environment.conf
+sudo cp /tmp/libs/hpcc-streaming-kafka-0.8.0.jar /opt/HPCCSystems/javalib
 
 # Start the HPCC Platform services
 sudo service hpcc-init start

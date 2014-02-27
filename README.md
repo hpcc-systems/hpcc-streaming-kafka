@@ -1,4 +1,4 @@
-kafka-integration
+hpcc-streaming-kafka
 ----------
 
 This repository contains the source code/documentation for streaming data to HPCC using Apache Kafka
@@ -36,7 +36,7 @@ the needed files.
  
 Data Consumer Installation - HPCC Nodes:
 ----------
-- Copy <b>build/libs/kafka-integration-n.n.n.jar</b> (created by the Gradle build) to each HPCC node 
+- Copy <b>build/libs/hpcc-streaming-kafka-n.n.n.jar</b> (created by the Gradle build) to each HPCC node 
 (including the THOR Master) and add it to the classpath.  (TODO automate this step)
 - Restart the HPCC cluster.
 
